@@ -1,0 +1,162 @@
+.receipt-capture-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// Main capture card
+ion-card {
+  margin: 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  ion-card-header {
+    text-align: center;
+    padding-bottom: 8px;
+    
+    ion-card-title {
+      font-size: 1.3em;
+      font-weight: 600;
+      color: var(--ion-color-dark);
+    }
+    
+    ion-card-subtitle {
+      color: var(--ion-color-medium);
+      font-size: 0.9em;
+      margin-top: 4px;
+    }
+  }
+  
+  ion-card-content {
+    padding-top: 8px;
+    
+    ion-button {
+      margin: 8px 0;
+      height: 48px;
+      font-weight: 500;
+      
+      &[fill="solid"] {
+        --background: var(--ion-color-primary);
+        --background-activated: var(--ion-color-primary-shade);
+      }
+      
+      &[fill="outline"] {
+        --border-color: var(--ion-color-primary);
+        --color: var(--ion-color-primary);
+      }
+      
+      &[disabled] {
+        opacity: 0.6;
+      }
+      
+      ion-icon {
+        font-size: 1.2em;
+      }
+      
+      ion-spinner {
+        --color: white;
+      }
+    }
+  }
+}
+
+// Recent receipts section
+.recent-receipts-card {
+  ion-card-header {
+    ion-card-title {
+      font-size: 1.1em;
+      color: var(--ion-color-dark);
+    }
+  }
+  
+  ion-list {
+    background: transparent;
+    
+    ion-item {
+      --padding-start: 0;
+      --padding-end: 0;
+      --inner-padding-end: 0;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      --background: var(--ion-color-light);
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      ion-thumbnail {
+        --size: 50px;
+        --border-radius: 6px;
+        margin-right: 12px;
+        
+        img {
+          border-radius: 6px;
+          object-fit: cover;
+        }
+      }
+      
+      ion-label {
+        h2 {
+          font-weight: 600;
+          color: var(--ion-color-dark);
+          font-size: 0.95em;
+          margin-bottom: 2px;
+        }
+        
+        p {
+          color: var(--ion-color-medium);
+          font-size: 0.85em;
+          margin: 1px 0;
+        }
+      }
+    }
+  }
+}
+
+// Toast styling
+ion-toast {
+  --background: var(--ion-color-dark);
+  --color: white;
+  --border-radius: 8px;
+}
+
+// Upload states
+.upload-button-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .receipt-capture-container {
+    padding: 12px;
+  }
+  
+  ion-card {
+    ion-card-content {
+      ion-button {
+        height: 44px;
+        font-size: 0.9em;
+      }
+    }
+  }
+}
+
+// Animation for upload state
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+ion-button[disabled] {
+  animation: pulse 2s infinite;
+}

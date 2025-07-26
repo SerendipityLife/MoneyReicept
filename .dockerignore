@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+README.md
+.env
+.angular
+e2e
+src/**/*.spec.ts
+src/**/*.test.ts
+karma.conf.js
+*.md

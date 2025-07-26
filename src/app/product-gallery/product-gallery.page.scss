@@ -1,0 +1,256 @@
+.filters-container {
+  padding: 16px;
+  background: var(--ion-color-light);
+  border-bottom: 1px solid var(--ion-color-medium);
+
+  .filter-chips {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+
+    ion-select {
+      min-width: 120px;
+      max-width: 150px;
+    }
+  }
+
+  .confidence-filter {
+    margin-top: 16px;
+    
+    ion-label {
+      font-size: 14px;
+      color: var(--ion-color-medium-shade);
+      margin-bottom: 8px;
+      display: block;
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  
+  ion-spinner {
+    margin-bottom: 16px;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  
+  ion-icon {
+    color: var(--ion-color-medium);
+    margin-bottom: 16px;
+  }
+  
+  h2 {
+    color: var(--ion-color-dark);
+    margin: 0 0 8px 0;
+    font-size: 24px;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    margin: 0 0 24px 0;
+    font-size: 16px;
+  }
+}
+
+// Grid View Styles
+.product-card {
+  margin: 0;
+  height: 100%;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  .image-container {
+    position: relative;
+    height: 150px;
+    overflow: hidden;
+
+    ion-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .confidence-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 10px;
+      padding: 2px 6px;
+    }
+  }
+
+  ion-card-content {
+    padding: 12px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .product-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 4px 0;
+      color: var(--ion-color-dark);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .product-brand {
+      font-size: 12px;
+      color: var(--ion-color-medium);
+      margin: 0 0 8px 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    ion-chip {
+      align-self: flex-start;
+      font-size: 10px;
+      height: 20px;
+    }
+  }
+}
+
+// List View Styles
+ion-list {
+  ion-item {
+    --padding-start: 16px;
+    --padding-end: 16px;
+
+    ion-thumbnail {
+      width: 60px;
+      height: 60px;
+      margin-right: 16px;
+
+      ion-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+    }
+
+    ion-label {
+      h2 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 4px 0;
+        color: var(--ion-color-dark);
+      }
+
+      p {
+        font-size: 14px;
+        color: var(--ion-color-medium);
+        margin: 0 0 4px 0;
+        
+        &.description {
+          font-size: 12px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          max-width: 200px;
+        }
+      }
+
+      .item-footer {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+
+        ion-chip {
+          font-size: 10px;
+          height: 20px;
+        }
+
+        ion-badge {
+          font-size: 10px;
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .filters-container {
+    padding: 12px;
+
+    .filter-chips {
+      ion-select {
+        min-width: 100px;
+        max-width: 120px;
+      }
+    }
+  }
+
+  .product-card {
+    .image-container {
+      height: 120px;
+    }
+
+    ion-card-content {
+      padding: 8px;
+      height: 70px;
+
+      .product-name {
+        font-size: 13px;
+      }
+
+      .product-brand {
+        font-size: 11px;
+      }
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .filters-container {
+    background: var(--ion-color-dark);
+    border-bottom-color: var(--ion-color-medium-tint);
+  }
+
+  .product-card {
+    ion-card-content {
+      .product-name {
+        color: var(--ion-color-light);
+      }
+    }
+  }
+
+  ion-list {
+    ion-item {
+      ion-label {
+        h2 {
+          color: var(--ion-color-light);
+        }
+      }
+    }
+  }
+}

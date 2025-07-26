@@ -1,17 +1,114 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 2
+      영수증 목록
     </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openSearchModal()">
+        <ion-icon name="search" [color]="isSearchActive ? 'primary' : ''"></ion-icon>
+      </ion-button>
+      <ion-button *ngIf="isSearchActive" (click)="clearSearch()">
+        <ion-icon name="close-circle" color="medium"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
+      <ion-title size="large">영수증 목록</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="receipt-list-container">
+    <!-- Search Status Indicator -->
+    <div *ngIf="isSearchActive" class="search-status">
+      <ion-chip color="primary">
+        <ion-icon name="search"></ion-icon>
+        <ion-label>검색 필터 적용됨</ion-label>
+        <ion-icon name="close-circle" (click)="clearSearch()"></ion-icon>
+      </ion-chip>
+    </div>
+
+    <ion-segment [(ngModel)]="selectedSegment" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="all">
+        <ion-label>전체</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="today">
+        <ion-label>오늘</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="week">
+        <ion-label>이번 주</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <ion-list *ngIf="receipts.length > 0">
+      <ion-item-group *ngFor="let group of groupedReceipts">
+        <ion-item-divider>
+          <ion-label>{{ group.date | date:'yyyy년 MM월 dd일' }}</ion-label>
+        </ion-item-divider>
+        
+        <ion-item *ngFor="let receipt of group.receipts" button (click)="viewReceipt(receipt.id)">
+          <ion-thumbnail slot="start">
+            <img [src]="receipt.imageUrl" alt="영수증 이미지">
+            <!-- Processing Status Overlay -->
+            <div class="status-overlay" *ngIf="receipt.processingStatus !== 'completed'">
+              <ion-spinner 
+                *ngIf="receipt.processingStatus === 'processing'" 
+                name="crescent" 
+                color="primary">
+              </ion-spinner>
+              <ion-icon 
+                *ngIf="receipt.processingStatus === 'failed'" 
+                name="alert-circle" 
+                color="danger">
+              </ion-icon>
+              <ion-icon 
+                *ngIf="receipt.processingStatus === 'pending'" 
+                name="time" 
+                color="warning">
+              </ion-icon>
+            </div>
+          </ion-thumbnail>
+          
+          <ion-label>
+            <h2>{{ receipt.storeName || '알 수 없는 매장' }}</h2>
+            <p>{{ receipt.storeLocation }}</p>
+            <p *ngIf="receipt.processingStatus === 'completed'">
+              {{ receipt.totalAmountKrw | currency:'KRW':'symbol':'1.0-0' }} 
+              (¥{{ receipt.totalAmountJpy | number:'1.0-0' }})
+            </p>
+            <p *ngIf="receipt.processingStatus !== 'completed'" class="processing-text">
+              {{ getProcessingStatusText(receipt.processingStatus) }}
+            </p>
+          </ion-label>
+          
+          <div slot="end" class="receipt-end-content">
+            <ion-note>{{ receipt.purchaseDate | date:'HH:mm' }}</ion-note>
+            <ion-chip 
+              [color]="getStatusColor(receipt.processingStatus)" 
+              size="small"
+              class="status-chip">
+              {{ getStatusText(receipt.processingStatus) }}
+            </ion-chip>
+          </div>
+        </ion-item>
+      </ion-item-group>
+    </ion-list>
+
+    <div *ngIf="receipts.length === 0" class="empty-state">
+      <ion-icon name="receipt-outline" size="large"></ion-icon>
+      <h2>영수증이 없습니다</h2>
+      <p>첫 번째 탭에서 영수증을 촬영해보세요!</p>
+    </div>
+
+    <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
 </ion-content>

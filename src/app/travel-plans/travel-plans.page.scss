@@ -1,0 +1,152 @@
+.travel-plans-container {
+  padding: 16px;
+
+  h2 {
+    margin: 24px 0 16px 0;
+    color: var(--ion-color-dark);
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .active-plan-card {
+    border-left: 4px solid var(--ion-color-success);
+    margin-bottom: 16px;
+
+    .plan-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .plan-dates {
+      margin-bottom: 16px;
+
+      p {
+        margin: 4px 0;
+        color: var(--ion-color-medium);
+      }
+
+      .days-remaining {
+        font-weight: 600;
+        color: var(--ion-color-success);
+      }
+    }
+
+    .budget-info {
+      margin-bottom: 16px;
+
+      .budget-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        padding: 4px 0;
+
+        &.remaining {
+          font-weight: 600;
+          color: var(--ion-color-primary);
+          border-top: 1px solid var(--ion-color-light);
+          padding-top: 8px;
+        }
+
+        &.daily {
+          font-weight: 600;
+          color: var(--ion-color-success);
+          font-size: 1.1rem;
+        }
+      }
+    }
+
+    .progress-section {
+      margin-bottom: 16px;
+
+      .progress-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        color: var(--ion-color-medium);
+      }
+    }
+
+    .plan-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+  }
+
+  .upcoming-plans,
+  .completed-plans {
+    margin-top: 24px;
+
+    ion-item {
+      --padding-start: 16px;
+      --padding-end: 16px;
+    }
+
+    .completed-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+
+      .completion-rate {
+        font-size: 0.8rem;
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+
+    ion-icon {
+      color: var(--ion-color-medium);
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      color: var(--ion-color-medium);
+      margin-bottom: 8px;
+    }
+
+    p {
+      color: var(--ion-color-medium);
+      margin-bottom: 24px;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .travel-plans-container {
+    padding: 12px;
+
+    .active-plan-card {
+      .plan-actions {
+        flex-direction: column;
+        gap: 4px;
+
+        ion-button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .travel-plans-container {
+    .active-plan-card {
+      .budget-info .budget-row.remaining {
+        border-top-color: var(--ion-color-dark);
+      }
+    }
+  }
+}

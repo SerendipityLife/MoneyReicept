@@ -1,0 +1,313 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab3"></ion-back-button>
+    </ion-buttons>
+    <ion-title>설정</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div *ngIf="settings" class="settings-container">
+    
+    <!-- Exchange Rate Settings -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="swap-horizontal-outline"></ion-icon>
+          환율 설정
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label>
+              <h3>수동 환율 설정</h3>
+              <p>자동 환율 대신 수동으로 설정한 환율 사용</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.exchangeRateSettings.useManualRate"
+              (ionChange)="onExchangeRateToggle()">
+            </ion-toggle>
+          </ion-item>
+          
+          <ion-item *ngIf="settings.exchangeRateSettings.useManualRate">
+            <ion-label position="stacked">현재 환율 (1엔 = ? 원)</ion-label>
+            <ion-input 
+              type="number" 
+              [(ngModel)]="manualExchangeRate"
+              placeholder="예: 9.5"
+              readonly>
+            </ion-input>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label>
+              <h3>자동 환율 업데이트</h3>
+              <p>환율 정보를 자동으로 업데이트</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.exchangeRateSettings.autoUpdateEnabled"
+              (ionChange)="updateExchangeRateSettings()">
+            </ion-toggle>
+          </ion-item>
+          
+          <ion-item *ngIf="settings.exchangeRateSettings.lastUpdated">
+            <ion-label>
+              <h3>마지막 업데이트</h3>
+              <p>{{ settings.exchangeRateSettings.lastUpdated | date:'medium' }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Language Settings -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="language-outline"></ion-icon>
+          언어 설정
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-icon name="language-outline" slot="start"></ion-icon>
+            <ion-label>앱 언어</ion-label>
+            <ion-select 
+              [(ngModel)]="currentLanguage" 
+              (ionChange)="onLanguageChange()"
+              interface="popover">
+              <ion-select-option 
+                *ngFor="let lang of i18nLanguageOptions" 
+                [value]="lang.code">
+                {{ lang.flag }} {{ lang.name }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Accessibility Settings -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="accessibility-outline"></ion-icon>
+          접근성 설정
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item button routerLink="/accessibility-settings">
+            <ion-icon name="accessibility-outline" slot="start"></ion-icon>
+            <ion-label>
+              <h3>접근성 옵션</h3>
+              <p>글자 크기, 고대비 모드, 스크린 리더 지원</p>
+            </ion-label>
+            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Translation Settings -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="language-outline"></ion-icon>
+          번역 설정
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label>
+              <h3>자동 번역</h3>
+              <p>상품명을 자동으로 번역</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.translationSettings.autoTranslateEnabled"
+              (ionChange)="updateTranslationSettings()">
+            </ion-toggle>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label>원본 언어</ion-label>
+            <ion-select 
+              [(ngModel)]="settings.translationSettings.sourceLanguage"
+              (ionChange)="updateTranslationSettings()">
+              <ion-select-option 
+                *ngFor="let lang of languageOptions" 
+                [value]="lang.code">
+                {{ getLanguageName(lang.code) }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label>번역 언어</ion-label>
+            <ion-select 
+              [(ngModel)]="settings.translationSettings.targetLanguage"
+              (ionChange)="updateTranslationSettings()">
+              <ion-select-option 
+                *ngFor="let lang of languageOptions" 
+                [value]="lang.code">
+                {{ getLanguageName(lang.code) }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label>번역 서비스</ion-label>
+            <ion-select 
+              [(ngModel)]="settings.translationSettings.translationProvider"
+              (ionChange)="updateTranslationSettings()">
+              <ion-select-option value="google">Google 번역</ion-select-option>
+              <ion-select-option value="manual">수동 번역</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Notification Settings -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="notifications-outline"></ion-icon>
+          알림 설정
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label>
+              <h3>푸시 알림</h3>
+              <p>앱 알림 허용</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.notificationSettings.pushNotificationsEnabled"
+              (ionChange)="updateNotificationSettings()">
+            </ion-toggle>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label>
+              <h3>영수증 처리 알림</h3>
+              <p>영수증 처리 완료 시 알림</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.notificationSettings.receiptProcessingNotifications"
+              (ionChange)="updateNotificationSettings()">
+            </ion-toggle>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label>
+              <h3>예산 알림</h3>
+              <p>예산 초과 시 알림</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.notificationSettings.budgetAlerts"
+              (ionChange)="updateNotificationSettings()">
+            </ion-toggle>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label>
+              <h3>환율 업데이트 알림</h3>
+              <p>환율 변동 시 알림</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.notificationSettings.exchangeRateUpdates"
+              (ionChange)="updateNotificationSettings()">
+            </ion-toggle>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label>
+              <h3>주간 리포트</h3>
+              <p>주간 지출 리포트 알림</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.notificationSettings.weeklyReports"
+              (ionChange)="updateNotificationSettings()">
+            </ion-toggle>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Backup Settings -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="cloud-upload-outline"></ion-icon>
+          백업 및 복원
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label>
+              <h3>자동 백업</h3>
+              <p>정기적으로 데이터 백업</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.backupSettings.autoBackupEnabled">
+            </ion-toggle>
+          </ion-item>
+          
+          <ion-item *ngIf="settings.backupSettings.autoBackupEnabled">
+            <ion-label>백업 주기</ion-label>
+            <ion-select [(ngModel)]="settings.backupSettings.backupFrequency">
+              <ion-select-option 
+                *ngFor="let option of backupFrequencyOptions" 
+                [value]="option.value">
+                {{ option.label }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label>
+              <h3>이미지 포함</h3>
+              <p>백업에 영수증 이미지 포함</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.backupSettings.includeImages">
+            </ion-toggle>
+          </ion-item>
+          
+          <ion-item *ngIf="settings.backupSettings.lastBackupDate">
+            <ion-label>
+              <h3>마지막 백업</h3>
+              <p>{{ settings.backupSettings.lastBackupDate | date:'medium' }}</p>
+            </ion-label>
+          </ion-item>
+          
+          <ion-item button (click)="showBackupOptions()">
+            <ion-label>
+              <h3>백업 관리</h3>
+              <p>백업 생성, 내보내기, 복원</p>
+            </ion-label>
+            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="!settings" class="loading-container">
+    <ion-card>
+      <ion-card-content>
+        <p>설정을 불러오는 중...</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+</ion-content>
