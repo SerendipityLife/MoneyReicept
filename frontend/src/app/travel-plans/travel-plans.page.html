@@ -1,0 +1,172 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>여행 일정 관리</ion-title>
+    <ion-buttons slot="start">
+      <ion-button routerLink="/tabs/tab3">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">여행 일정 관리</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="travel-plans-container">
+    <!-- Active Plans -->
+    <div class="active-plans" *ngIf="activePlans.length > 0">
+      <h2>진행 중인 여행</h2>
+      <ion-card *ngFor="let plan of activePlans" class="active-plan-card">
+        <ion-card-header>
+          <div class="plan-header">
+            <ion-card-title>{{ plan.name }}</ion-card-title>
+            <ion-chip color="success">
+              <ion-icon name="airplane"></ion-icon>
+              <ion-label>진행중</ion-label>
+            </ion-chip>
+          </div>
+        </ion-card-header>
+        
+        <ion-card-content>
+          <div class="plan-dates">
+            <p>{{ plan.startDate | date:'yyyy.MM.dd' }} - {{ plan.endDate | date:'yyyy.MM.dd' }}</p>
+            <p class="days-remaining">{{ getDaysRemaining(plan) }}일 남음</p>
+          </div>
+          
+          <div class="budget-info">
+            <div class="budget-row">
+              <span>지출</span>
+              <span>{{ plan.spent | currency:'KRW':'symbol':'1.0-0' }}</span>
+            </div>
+            <div class="budget-row">
+              <span>예산</span>
+              <span>{{ plan.budget | currency:'KRW':'symbol':'1.0-0' }}</span>
+            </div>
+            <div class="budget-row remaining">
+              <span>남은 예산</span>
+              <span>{{ getRemainingBudget(plan) | currency:'KRW':'symbol':'1.0-0' }}</span>
+            </div>
+            <div class="budget-row daily">
+              <span>일평균 가능 지출</span>
+              <span>{{ getDailyBudgetRemaining(plan) | currency:'KRW':'symbol':'1.0-0' }}</span>
+            </div>
+          </div>
+          
+          <div class="progress-section">
+            <div class="progress-info">
+              <span>예산 사용률</span>
+              <span>{{ getProgressPercentage(plan).toFixed(0) }}%</span>
+            </div>
+            <ion-progress-bar 
+              [value]="getProgressPercentage(plan) / 100" 
+              [color]="getProgressColor(plan)">
+            </ion-progress-bar>
+          </div>
+          
+          <div class="plan-actions">
+            <ion-button fill="outline" size="small" (click)="viewPlanDetails(plan)">
+              <ion-icon name="eye" slot="start"></ion-icon>
+              상세보기
+            </ion-button>
+            <ion-button fill="outline" size="small" (click)="openEditModal(plan)">
+              <ion-icon name="create" slot="start"></ion-icon>
+              수정
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Upcoming Plans -->
+    <div class="upcoming-plans" *ngIf="upcomingPlans.length > 0">
+      <h2>예정된 여행</h2>
+      <ion-list>
+        <ion-item-sliding *ngFor="let plan of upcomingPlans">
+          <ion-item button (click)="viewPlanDetails(plan)">
+            <ion-label>
+              <h2>{{ plan.name }}</h2>
+              <p>{{ plan.startDate | date:'yyyy.MM.dd' }} - {{ plan.endDate | date:'yyyy.MM.dd' }}</p>
+              <p>예산: {{ plan.budget | currency:'KRW':'symbol':'1.0-0' }}</p>
+            </ion-label>
+            <ion-chip slot="end" color="warning">
+              <ion-icon name="time"></ion-icon>
+              <ion-label>예정</ion-label>
+            </ion-chip>
+          </ion-item>
+          
+          <ion-item-options side="end">
+            <ion-item-option color="primary" (click)="openEditModal(plan)">
+              <ion-icon name="create"></ion-icon>
+              수정
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="deletePlan(plan)">
+              <ion-icon name="trash"></ion-icon>
+              삭제
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+    </div>
+
+    <!-- Completed Plans -->
+    <div class="completed-plans" *ngIf="completedPlans.length > 0">
+      <h2>완료된 여행</h2>
+      <ion-list>
+        <ion-item-sliding *ngFor="let plan of completedPlans">
+          <ion-item button (click)="viewPlanDetails(plan)">
+            <ion-label>
+              <h2>{{ plan.name }}</h2>
+              <p>{{ plan.startDate | date:'yyyy.MM.dd' }} - {{ plan.endDate | date:'yyyy.MM.dd' }}</p>
+              <p>
+                지출: {{ plan.spent | currency:'KRW':'symbol':'1.0-0' }} / 
+                {{ plan.budget | currency:'KRW':'symbol':'1.0-0' }}
+              </p>
+            </ion-label>
+            <div slot="end" class="completed-info">
+              <ion-chip color="medium">
+                <ion-icon name="checkmark-circle"></ion-icon>
+                <ion-label>완료</ion-label>
+              </ion-chip>
+              <div class="completion-rate">
+                {{ getProgressPercentage(plan).toFixed(0) }}%
+              </div>
+            </div>
+          </ion-item>
+          
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="deletePlan(plan)">
+              <ion-icon name="trash"></ion-icon>
+              삭제
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="travelPlans.length === 0" class="empty-state">
+      <ion-icon name="airplane-outline" size="large"></ion-icon>
+      <h2>여행 일정이 없습니다</h2>
+      <p>새로운 여행 일정을 추가해보세요!</p>
+      <ion-button (click)="openCreateModal()">
+        <ion-icon name="add" slot="start"></ion-icon>
+        여행 일정 추가
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openCreateModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

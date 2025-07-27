@@ -1,0 +1,448 @@
+/* Accessibility Styles for Receipt Manager */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Skip links for keyboard navigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--ion-color-primary);
+  color: var(--ion-color-primary-contrast);
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1000;
+  
+  &:focus {
+    top: 6px;
+  }
+}
+
+/* Font size scaling */
+:root {
+  --font-scale: 1;
+}
+
+.font-small {
+  --font-scale: 0.875;
+}
+
+.font-medium {
+  --font-scale: 1;
+}
+
+.font-large {
+  --font-scale: 1.125;
+}
+
+.font-extra-large {
+  --font-scale: 1.25;
+}
+
+/* Apply font scaling to text elements */
+body,
+ion-content,
+ion-item,
+ion-label,
+ion-button,
+ion-input,
+ion-textarea,
+ion-select {
+  font-size: calc(1rem * var(--font-scale));
+}
+
+h1 { font-size: calc(2rem * var(--font-scale)); }
+h2 { font-size: calc(1.75rem * var(--font-scale)); }
+h3 { font-size: calc(1.5rem * var(--font-scale)); }
+h4 { font-size: calc(1.25rem * var(--font-scale)); }
+h5 { font-size: calc(1.125rem * var(--font-scale)); }
+h6 { font-size: calc(1rem * var(--font-scale)); }
+
+/* High contrast mode */
+.high-contrast {
+  --ion-color-primary: #000000;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-secondary: #ffffff;
+  --ion-color-secondary-contrast: #000000;
+  --ion-color-tertiary: #000000;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-success: #000000;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-warning: #000000;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-danger: #000000;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-medium: #666666;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-light: #ffffff;
+  --ion-color-light-contrast: #000000;
+  --ion-color-dark: #000000;
+  --ion-color-dark-contrast: #ffffff;
+  
+  --ion-background-color: #ffffff;
+  --ion-text-color: #000000;
+  --ion-border-color: #000000;
+  
+  ion-item {
+    --border-color: #000000;
+    --background: #ffffff;
+    --color: #000000;
+  }
+  
+  ion-button {
+    --border-width: 2px;
+    --border-style: solid;
+    --border-color: #000000;
+  }
+  
+  ion-card {
+    --background: #ffffff;
+    --color: #000000;
+    border: 2px solid #000000;
+  }
+}
+
+/* Reduced motion */
+.reduced-motion {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Large buttons */
+.large-buttons {
+  ion-button {
+    --min-height: 48px;
+    --padding-start: 24px;
+    --padding-end: 24px;
+    font-size: calc(1.125rem * var(--font-scale));
+  }
+  
+  ion-fab-button {
+    --size: 64px;
+  }
+  
+  ion-segment-button {
+    --min-height: 48px;
+  }
+  
+  ion-chip {
+    --min-height: 40px;
+    font-size: calc(1rem * var(--font-scale));
+  }
+}
+
+/* Enhanced focus indicators */
+.focus-indicators {
+  ion-button:focus,
+  ion-item:focus,
+  ion-input:focus,
+  ion-textarea:focus,
+  ion-select:focus,
+  ion-checkbox:focus,
+  ion-radio:focus,
+  ion-toggle:focus,
+  ion-range:focus,
+  ion-searchbar:focus,
+  ion-segment-button:focus,
+  ion-chip:focus,
+  ion-fab-button:focus {
+    outline: 3px solid var(--ion-color-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px var(--ion-color-primary-tint);
+  }
+  
+  /* Custom focus styles for specific components */
+  ion-card:focus-within {
+    outline: 2px solid var(--ion-color-primary);
+    outline-offset: 2px;
+  }
+  
+  ion-list ion-item:focus {
+    --background: var(--ion-color-primary-tint);
+    --color: var(--ion-color-primary-contrast);
+  }
+}
+
+/* Touch target improvements */
+.touch-accessible {
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Touch feedback */
+.touch-active {
+  opacity: 0.7;
+  transform: scale(0.95);
+  transition: all 0.1s ease;
+}
+
+/* Improved form accessibility */
+ion-item.item-has-focus {
+  --border-color: var(--ion-color-primary);
+  --border-width: 2px;
+}
+
+ion-input.has-error,
+ion-textarea.has-error,
+ion-select.has-error {
+  --border-color: var(--ion-color-danger);
+  --border-width: 2px;
+}
+
+.form-error {
+  color: var(--ion-color-danger);
+  font-size: calc(0.875rem * var(--font-scale));
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  
+  ion-icon {
+    margin-right: 4px;
+  }
+}
+
+.form-help {
+  color: var(--ion-color-medium);
+  font-size: calc(0.875rem * var(--font-scale));
+  margin-top: 4px;
+}
+
+/* Loading states with accessibility */
+.loading-accessible {
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  
+  &[aria-busy="true"] {
+    pointer-events: none;
+  }
+}
+
+/* Offline indicator */
+.offline-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--ion-color-warning);
+  color: var(--ion-color-warning-contrast);
+  padding: 8px;
+  text-align: center;
+  font-size: calc(0.875rem * var(--font-scale));
+  z-index: 1000;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
+  
+  &.show {
+    transform: translateY(0);
+  }
+}
+
+/* Language-specific styles */
+[lang="ar"],
+[lang="he"] {
+  direction: rtl;
+  text-align: right;
+}
+
+[lang="ja"] {
+  line-height: 1.6;
+  
+  .japanese-text {
+    font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+  }
+}
+
+[lang="zh"] {
+  line-height: 1.6;
+  
+  .chinese-text {
+    font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  }
+}
+
+/* Responsive accessibility improvements */
+@media (max-width: 768px) {
+  .large-buttons {
+    ion-button {
+      --min-height: 52px;
+      --padding-start: 20px;
+      --padding-end: 20px;
+    }
+  }
+  
+  .touch-accessible {
+    min-width: 48px;
+    min-height: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .font-extra-large {
+    --font-scale: 1.375;
+  }
+  
+  .large-buttons {
+    ion-button {
+      --min-height: 56px;
+      width: 100%;
+      margin: 8px 0;
+    }
+  }
+}
+
+/* Print accessibility */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  * {
+    color: #000 !important;
+    background: #fff !important;
+  }
+  
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+}
+
+/* Animation preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast preferences */
+@media (prefers-contrast: high) {
+  :root {
+    --ion-color-primary: #000000;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-background-color: #ffffff;
+    --ion-text-color: #000000;
+  }
+}
+
+/* Color scheme preferences */
+@media (prefers-color-scheme: dark) {
+  .auto-theme {
+    --ion-background-color: #121212;
+    --ion-text-color: #ffffff;
+  }
+}
+
+/* Voice over specific styles (iOS) */
+[data-voiceover="true"] {
+  .voiceover-hint {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  
+  ion-button::after {
+    content: attr(aria-label);
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+}
+
+/* Keyboard navigation improvements */
+.keyboard-navigation {
+  ion-item:focus {
+    --background: var(--ion-color-primary-tint);
+  }
+  
+  ion-button:focus {
+    --background: var(--ion-color-primary-shade);
+  }
+}
+
+/* Error states with better accessibility */
+.error-state {
+  ion-input,
+  ion-textarea,
+  ion-select {
+    --border-color: var(--ion-color-danger);
+    --border-width: 2px;
+  }
+  
+  .error-message {
+    color: var(--ion-color-danger);
+    font-size: calc(0.875rem * var(--font-scale));
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    
+    ion-icon {
+      margin-right: 8px;
+      font-size: 1.2em;
+    }
+  }
+}
+
+/* Success states */
+.success-state {
+  ion-input,
+  ion-textarea,
+  ion-select {
+    --border-color: var(--ion-color-success);
+    --border-width: 2px;
+  }
+  
+  .success-message {
+    color: var(--ion-color-success);
+    font-size: calc(0.875rem * var(--font-scale));
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    
+    ion-icon {
+      margin-right: 8px;
+      font-size: 1.2em;
+    }
+  }
+}

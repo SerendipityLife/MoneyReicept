@@ -1,0 +1,213 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [text]="translate('common.back')" defaultHref="/settings"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ translate('accessibility.title') }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="accessibility-settings">
+  <!-- Skip link for keyboard navigation -->
+  <a href="#main-content" class="skip-link">{{ translate('accessibility.skipToContent') }}</a>
+  
+  <div id="main-content" tabindex="-1">
+    <!-- Font Size Settings -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="text-outline" aria-hidden="true"></ion-icon>
+          {{ translate('accessibility.textSettings') }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-icon name="text-outline" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>{{ translate('accessibility.fontSize') }}</ion-label>
+            <ion-select 
+              [(ngModel)]="settings.fontSize" 
+              (ionChange)="onFontSizeChange()"
+              [aria-label]="translate('accessibility.fontSize')"
+              interface="popover">
+              <ion-select-option 
+                *ngFor="let option of fontSizeOptions" 
+                [value]="option.value">
+                {{ translate(option.label) }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Visual Settings -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="eye-outline" aria-hidden="true"></ion-icon>
+          {{ translate('accessibility.visualSettings') }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-icon name="contrast-outline" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h3>{{ translate('accessibility.highContrast') }}</h3>
+              <p>{{ translate('accessibility.highContrastDescription') }}</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.highContrast" 
+              (ionChange)="onHighContrastToggle()"
+              [aria-label]="translate('accessibility.highContrast')"
+              slot="end">
+            </ion-toggle>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="hand-left-outline" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h3>{{ translate('accessibility.reducedMotion') }}</h3>
+              <p>{{ translate('accessibility.reducedMotionDescription') }}</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.reducedMotion" 
+              (ionChange)="onReducedMotionToggle()"
+              [aria-label]="translate('accessibility.reducedMotion')"
+              slot="end">
+            </ion-toggle>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="focus-outline" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h3>{{ translate('accessibility.focusIndicators') }}</h3>
+              <p>{{ translate('accessibility.focusIndicatorsDescription') }}</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.focusIndicators" 
+              (ionChange)="onFocusIndicatorsToggle()"
+              [aria-label]="translate('accessibility.focusIndicators')"
+              slot="end">
+            </ion-toggle>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Interaction Settings -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="hand-left-outline" aria-hidden="true"></ion-icon>
+          {{ translate('accessibility.interactionSettings') }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-icon name="hand-left-outline" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h3>{{ translate('accessibility.largeButtons') }}</h3>
+              <p>{{ translate('accessibility.largeButtonsDescription') }}</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.largeButtons" 
+              (ionChange)="onLargeButtonsToggle()"
+              [aria-label]="translate('accessibility.largeButtons')"
+              slot="end">
+            </ion-toggle>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Screen Reader Settings -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="volume-high-outline" aria-hidden="true"></ion-icon>
+          {{ translate('accessibility.screenReaderSettings') }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-icon name="accessibility-outline" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h3>{{ translate('accessibility.screenReader') }}</h3>
+              <p>{{ translate('accessibility.screenReaderDescription') }}</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.screenReaderSupport" 
+              (ionChange)="onScreenReaderToggle()"
+              [aria-label]="translate('accessibility.screenReader')"
+              slot="end">
+            </ion-toggle>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="volume-high-outline" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h3>{{ translate('accessibility.voiceOver') }}</h3>
+              <p>{{ translate('accessibility.voiceOverDescription') }}</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.voiceOverEnabled" 
+              (ionChange)="onVoiceOverToggle()"
+              [aria-label]="translate('accessibility.voiceOver')"
+              slot="end">
+            </ion-toggle>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="chatbubble-outline" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h3>{{ translate('accessibility.announcements') }}</h3>
+              <p>{{ translate('accessibility.announcementsDescription') }}</p>
+            </ion-label>
+            <ion-toggle 
+              [(ngModel)]="settings.announcements" 
+              (ionChange)="onAnnouncementsToggle()"
+              [aria-label]="translate('accessibility.announcements')"
+              slot="end">
+            </ion-toggle>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Reset Settings -->
+    <ion-card>
+      <ion-card-content>
+        <ion-button 
+          expand="block" 
+          fill="outline" 
+          color="medium"
+          (click)="resetToDefaults()"
+          [aria-label]="translate('accessibility.resetToDefaults')">
+          {{ translate('accessibility.resetToDefaults') }}
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Accessibility Information -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ translate('accessibility.information') }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>{{ translate('accessibility.informationText') }}</p>
+        <ion-button 
+          fill="clear" 
+          size="small"
+          href="https://www.w3.org/WAI/WCAG21/quickref/"
+          target="_blank"
+          [aria-label]="translate('accessibility.learnMore')">
+          {{ translate('accessibility.learnMore') }}
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

@@ -1,0 +1,202 @@
+.segment-container {
+  margin: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filter-container {
+  background: var(--ion-color-light);
+  padding: 8px 0;
+  
+  ion-item {
+    --background: transparent;
+    --border-color: transparent;
+    margin: 0 16px;
+    
+    ion-select {
+      --placeholder-color: var(--ion-color-medium);
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  
+  ion-spinner {
+    margin-bottom: 16px;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+.product-rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--ion-color-primary);
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.price-info {
+  color: var(--ion-color-success);
+  font-weight: 500;
+}
+
+.purchase-count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  
+  ion-icon {
+    margin-bottom: 4px;
+  }
+}
+
+.trend-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  
+  .trend-percentage {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 4px;
+    
+    &.rising {
+      color: var(--ion-color-success);
+    }
+    
+    &.falling {
+      color: var(--ion-color-danger);
+    }
+  }
+  
+  .purchase-count {
+    font-size: 12px;
+    color: var(--ion-color-medium);
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  
+  ion-icon {
+    color: var(--ion-color-medium);
+    margin-bottom: 16px;
+  }
+  
+  h3 {
+    color: var(--ion-color-dark);
+    margin: 0 0 8px 0;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+.store-recommendations {
+  margin-top: 24px;
+  
+  ion-item-divider {
+    --background: var(--ion-color-light);
+    --color: var(--ion-color-dark);
+    font-weight: 600;
+  }
+  
+  ion-grid {
+    padding: 16px;
+  }
+  
+  ion-button {
+    --border-radius: 8px;
+    margin: 4px 0;
+  }
+}
+
+// List styling improvements
+ion-list {
+  background: transparent;
+  
+  ion-item {
+    --background: white;
+    --border-color: var(--ion-color-light);
+    margin: 8px 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    
+    &:hover {
+      --background: var(--ion-color-light);
+    }
+  }
+  
+  ion-item-group {
+    margin-bottom: 24px;
+    
+    ion-item-divider {
+      --background: var(--ion-color-primary);
+      --color: white;
+      font-weight: 600;
+      margin: 0 16px 8px 16px;
+      border-radius: 8px 8px 0 0;
+    }
+    
+    ion-item {
+      margin: 0 16px 2px 16px;
+      border-radius: 0;
+      
+      &:last-child {
+        border-radius: 0 0 8px 8px;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .filter-container {
+    ion-item {
+      margin: 0 8px;
+    }
+  }
+  
+  ion-list ion-item {
+    margin: 4px 8px;
+  }
+  
+  .store-recommendations ion-grid {
+    padding: 8px;
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .segment-container {
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+  }
+  
+  ion-list ion-item {
+    --background: var(--ion-color-dark);
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
+  }
+}

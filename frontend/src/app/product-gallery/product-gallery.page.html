@@ -1,0 +1,167 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>상품 갤러리</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleViewMode()">
+        <ion-icon [name]="viewMode === 'grid' ? 'list' : 'grid'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">상품 갤러리</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Search and Filters -->
+  <div class="filters-container">
+    <ion-searchbar 
+      placeholder="상품명, 브랜드, 설명 검색"
+      [value]="searchTerm"
+      (ionInput)="onSearchChange($event)"
+      show-clear-button="focus">
+    </ion-searchbar>
+
+    <div class="filter-chips">
+      <ion-select 
+        placeholder="카테고리" 
+        [value]="selectedCategory"
+        (ionChange)="onCategoryChange($event)"
+        interface="popover">
+        <ion-select-option value="">전체</ion-select-option>
+        <ion-select-option *ngFor="let category of categories" [value]="category">
+          {{category}}
+        </ion-select-option>
+      </ion-select>
+
+      <ion-select 
+        placeholder="브랜드" 
+        [value]="selectedBrand"
+        (ionChange)="onBrandChange($event)"
+        interface="popover">
+        <ion-select-option value="">전체</ion-select-option>
+        <ion-select-option *ngFor="let brand of brands" [value]="brand">
+          {{brand}}
+        </ion-select-option>
+      </ion-select>
+
+      <ion-chip 
+        *ngIf="selectedCategory || selectedBrand || searchTerm"
+        (click)="clearFilters()"
+        color="primary">
+        <ion-icon name="close"></ion-icon>
+        <ion-label>필터 초기화</ion-label>
+      </ion-chip>
+    </div>
+
+    <!-- Confidence Filter -->
+    <div class="confidence-filter">
+      <ion-label>신뢰도 최소값: {{minConfidence * 100}}%</ion-label>
+      <ion-range 
+        [value]="minConfidence" 
+        min="0" 
+        max="1" 
+        step="0.1"
+        (ionChange)="onConfidenceChange($event)"
+        color="primary">
+      </ion-range>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading && products.length === 0" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>상품을 불러오는 중...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredProducts.length === 0" class="empty-state">
+    <ion-icon name="images" size="large"></ion-icon>
+    <h2>상품이 없습니다</h2>
+    <p>상품 사진을 추가해보세요!</p>
+    <ion-button (click)="showAddProductOptions()" fill="outline">
+      <ion-icon name="add" slot="start"></ion-icon>
+      상품 추가
+    </ion-button>
+  </div>
+
+  <!-- Grid View -->
+  <ion-grid *ngIf="viewMode === 'grid' && filteredProducts.length > 0">
+    <ion-row>
+      <ion-col size="6" size-md="4" size-lg="3" *ngFor="let product of filteredProducts">
+        <ion-card class="product-card" (click)="openProductDetail(product)">
+          <div class="image-container">
+            <ion-img [src]="product.imageUrl" [alt]="product.productName || '상품 이미지'"></ion-img>
+            <ion-badge 
+              class="confidence-badge" 
+              [color]="getConfidenceColor(product.confidenceScore)">
+              {{getConfidenceText(product.confidenceScore)}}
+            </ion-badge>
+          </div>
+          <ion-card-content>
+            <h3 class="product-name">{{product.productName || '알 수 없는 상품'}}</h3>
+            <p class="product-brand" *ngIf="product.brand">{{product.brand}}</p>
+            <ion-chip *ngIf="product.category" color="secondary" size="small">
+              {{product.category}}
+            </ion-chip>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- List View -->
+  <ion-list *ngIf="viewMode === 'list' && filteredProducts.length > 0">
+    <ion-item 
+      *ngFor="let product of filteredProducts" 
+      (click)="openProductDetail(product)"
+      button>
+      <ion-thumbnail slot="start">
+        <ion-img [src]="product.imageUrl" [alt]="product.productName || '상품 이미지'"></ion-img>
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{product.productName || '알 수 없는 상품'}}</h2>
+        <p *ngIf="product.brand">{{product.brand}}</p>
+        <p *ngIf="product.description" class="description">{{product.description}}</p>
+        <div class="item-footer">
+          <ion-chip *ngIf="product.category" color="secondary" size="small">
+            {{product.category}}
+          </ion-chip>
+          <ion-badge [color]="getConfidenceColor(product.confidenceScore)">
+            {{getConfidenceText(product.confidenceScore)}}
+          </ion-badge>
+        </div>
+      </ion-label>
+      <ion-button 
+        slot="end" 
+        fill="clear" 
+        (click)="deleteProduct(product); $event.stopPropagation()">
+        <ion-icon name="trash" color="danger"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <!-- Infinite Scroll -->
+  <ion-infinite-scroll 
+    *ngIf="hasMore && filteredProducts.length > 0"
+    (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content
+      loading-spinner="bubbles"
+      loading-text="더 많은 상품을 불러오는 중...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <!-- Floating Action Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="showAddProductOptions()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

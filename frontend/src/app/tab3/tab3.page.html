@@ -1,0 +1,166 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      가계부 통계
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openDatePicker()">
+        <ion-icon name="calendar"></ion-icon>
+      </ion-button>
+      <ion-button routerLink="/settings">
+        <ion-icon name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">가계부 통계</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="budget-container">
+    <!-- 지출 요약 카드 -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>이번 달 지출 요약</ion-card-title>
+        <ion-card-subtitle>{{ currentMonth | date:'yyyy년 MM월' }}</ion-card-subtitle>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <div class="expense-summary">
+          <div class="total-expense">
+            <h1>{{ totalExpense | currency:'KRW':'symbol':'1.0-0' }}</h1>
+            <p>총 지출</p>
+          </div>
+          
+          <div class="expense-stats">
+            <div class="stat-item">
+              <span class="amount">{{ averageDaily | currency:'KRW':'symbol':'1.0-0' }}</span>
+              <span class="label">일평균</span>
+            </div>
+            <div class="stat-item">
+              <span class="amount">{{ receiptCount }}</span>
+              <span class="label">영수증 수</span>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- 차트 기간 선택 -->
+    <ion-segment [(ngModel)]="selectedPeriod" (ionChange)="onPeriodChange($event)">
+      <ion-segment-button value="daily">
+        <ion-label>일별</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="monthly">
+        <ion-label>월별</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- 지출 추이 차트 -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          {{ selectedPeriod === 'daily' ? '일별 지출 추이' : '월별 지출 추이' }}
+        </ion-card-title>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <div class="chart-container">
+          <canvas 
+            #dailyChart 
+            *ngIf="selectedPeriod === 'daily'"
+            style="height: 300px;">
+          </canvas>
+          <canvas 
+            #monthlyChart 
+            *ngIf="selectedPeriod === 'monthly'"
+            style="height: 300px;">
+          </canvas>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- 카테고리별 지출 파이 차트 -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>카테고리별 지출 분석</ion-card-title>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <div class="chart-container">
+          <canvas #categoryChart style="height: 300px;"></canvas>
+        </div>
+        
+        <!-- 카테고리 상세 정보 -->
+        <div class="category-details">
+          <div *ngFor="let category of categoryExpenses" class="category-detail-item">
+            <div class="category-info">
+              <span class="category-name">{{ category.name }}</span>
+              <span class="category-amount">{{ category.amount | currency:'KRW':'symbol':'1.0-0' }}</span>
+            </div>
+            <div class="category-percentage">{{ category.percentage }}%</div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- 여행 일정별 지출 -->
+    <ion-card>
+      <ion-card-header>
+        <div class="card-header-with-action">
+          <ion-card-title>여행 일정별 지출</ion-card-title>
+          <ion-button fill="clear" size="small" routerLink="/travel-plans">
+            <ion-icon name="settings" slot="start"></ion-icon>
+            관리
+          </ion-button>
+        </div>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <div *ngIf="travelPlans.length > 0">
+          <ion-list>
+            <ion-item *ngFor="let plan of travelPlans.slice(0, 3)" button routerLink="/travel-plans">
+              <ion-label>
+                <h2>{{ plan.name }}</h2>
+                <p>{{ plan.startDate | date:'short' }} - {{ plan.endDate | date:'short' }}</p>
+                <p>{{ plan.spent | currency:'KRW':'symbol':'1.0-0' }} / {{ plan.budget | currency:'KRW':'symbol':'1.0-0' }}</p>
+              </ion-label>
+              <div slot="end" class="progress-container">
+                <ion-progress-bar 
+                  [value]="plan.spent / plan.budget" 
+                  [color]="plan.spent > plan.budget ? 'danger' : 'primary'">
+                </ion-progress-bar>
+                <span class="progress-text">
+                  {{ ((plan.spent / plan.budget) * 100).toFixed(0) }}%
+                </span>
+              </div>
+            </ion-item>
+          </ion-list>
+          
+          <div *ngIf="travelPlans.length > 3" class="show-more">
+            <ion-button fill="clear" routerLink="/travel-plans">
+              <ion-icon name="chevron-forward" slot="end"></ion-icon>
+              {{ travelPlans.length - 3 }}개 더 보기
+            </ion-button>
+          </div>
+        </div>
+        
+        <div *ngIf="travelPlans.length === 0" class="empty-travel-plans">
+          <p>등록된 여행 일정이 없습니다</p>
+          <ion-button fill="outline" routerLink="/travel-plans">
+            <ion-icon name="add" slot="start"></ion-icon>
+            여행 일정 추가
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

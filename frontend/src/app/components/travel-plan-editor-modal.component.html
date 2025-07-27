@@ -1,0 +1,93 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>여행 계획 편집</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="modal-container">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="calendar-outline"></ion-icon>
+          여행 정보 수정
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">여행 계획 이름 *</ion-label>
+          <ion-input 
+            [(ngModel)]="editedPlan.name" 
+            placeholder="예: 도쿄 여행 2025"
+            required>
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">시작일 *</ion-label>
+          <ion-datetime 
+            [(ngModel)]="editedPlan.startDate"
+            presentation="date"
+            [min]="minDate"
+            required>
+          </ion-datetime>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">종료일 *</ion-label>
+          <ion-datetime 
+            [(ngModel)]="editedPlan.endDate"
+            presentation="date"
+            [min]="editedPlan.startDate"
+            required>
+          </ion-datetime>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">예산 (선택사항)</ion-label>
+          <ion-input 
+            [(ngModel)]="editedPlan.budget" 
+            type="number"
+            placeholder="예산을 입력하세요">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">설명 (선택사항)</ion-label>
+          <ion-input 
+            [(ngModel)]="editedPlan.description" 
+            placeholder="여행에 대한 간단한 설명을 입력하세요">
+          </ion-input>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="button-container">
+      <ion-button 
+        expand="block" 
+        fill="solid" 
+        (click)="saveChanges()"
+        [disabled]="isSaving">
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+        <span *ngIf="!isSaving">변경사항 저장</span>
+        <span *ngIf="isSaving">저장 중...</span>
+      </ion-button>
+      
+      <ion-button 
+        expand="block" 
+        fill="outline" 
+        color="danger"
+        (click)="deleteTravelPlan()"
+        [disabled]="isDeleting">
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
+        <span *ngIf="!isDeleting">여행 계획 삭제</span>
+        <span *ngIf="isDeleting">삭제 중...</span>
+      </ion-button>
+    </div>
+  </div>
+</ion-content> 

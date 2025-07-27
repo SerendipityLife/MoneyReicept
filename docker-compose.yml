@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # MongoDB 데이터베이스
+  mongodb:
+    image: mongo:6
+    container_name: money-receipt-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: money_receipt
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - money-receipt-network
+
+  # 백엔드 API 서버
+  backend:
+    build: ./backend
+    container_name: money-receipt-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://admin:password@mongodb:27017/money_receipt?authSource=admin
+      JWT_SECRET: your_jwt_secret_key_here
+      FRONTEND_URL: http://localhost:4200
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    networks:
+      - money-receipt-network
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  # 프론트엔드 웹 서버
+  frontend:
+    build: ./frontend
+    container_name: money-receipt-frontend
+    restart: unless-stopped
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - money-receipt-network
+
+networks:
+  money-receipt-network:
+    driver: bridge
+
+volumes:
+  mongodb_data: 

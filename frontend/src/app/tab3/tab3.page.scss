@@ -1,0 +1,154 @@
+.budget-container {
+  padding: 16px;
+  
+  ion-card {
+    margin-bottom: 16px;
+  }
+  
+  ion-segment {
+    margin-bottom: 16px;
+  }
+  
+  .expense-summary {
+    .total-expense {
+      text-align: center;
+      margin-bottom: 20px;
+      
+      h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--ion-color-primary);
+        margin: 0;
+      }
+      
+      p {
+        color: var(--ion-color-medium);
+        margin: 4px 0 0 0;
+      }
+    }
+    
+    .expense-stats {
+      display: flex;
+      justify-content: space-around;
+      
+      .stat-item {
+        text-align: center;
+        
+        .amount {
+          display: block;
+          font-size: 1.2rem;
+          font-weight: 600;
+          color: var(--ion-color-dark);
+        }
+        
+        .label {
+          font-size: 0.9rem;
+          color: var(--ion-color-medium);
+        }
+      }
+    }
+  }
+  
+  .chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 300px;
+    }
+  }
+  
+  .category-details {
+    margin-top: 20px;
+    
+    .category-detail-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--ion-color-light);
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .category-info {
+        display: flex;
+        flex-direction: column;
+        
+        .category-name {
+          font-weight: 500;
+          margin-bottom: 4px;
+        }
+        
+        .category-amount {
+          font-size: 0.9rem;
+          color: var(--ion-color-medium);
+        }
+      }
+      
+      .category-percentage {
+        font-weight: 600;
+        color: var(--ion-color-primary);
+        font-size: 1.1rem;
+      }
+    }
+  }
+  
+  .progress-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 80px;
+    
+    ion-progress-bar {
+      width: 80px;
+      margin-bottom: 4px;
+    }
+    
+    .progress-text {
+      font-size: 0.8rem;
+      color: var(--ion-color-medium);
+    }
+  }
+  
+  .card-header-with-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .show-more {
+    text-align: center;
+    margin-top: 16px;
+  }
+  
+  .empty-travel-plans {
+    text-align: center;
+    padding: 40px 20px;
+    
+    p {
+      color: var(--ion-color-medium);
+      margin-bottom: 16px;
+    }
+  }
+  
+  // Chart responsive styles
+  @media (max-width: 768px) {
+    .chart-container {
+      height: 250px;
+    }
+  }
+  
+  // Loading state for charts
+  .chart-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    color: var(--ion-color-medium);
+  }
+}

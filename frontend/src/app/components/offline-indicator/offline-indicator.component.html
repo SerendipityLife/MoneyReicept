@@ -1,0 +1,81 @@
+<div 
+  class="offline-indicator" 
+  [class.show]="showIndicator"
+  [class.offline]="!syncStatus.isOnline"
+  [class.syncing]="syncStatus.syncInProgress"
+  [class.error]="!!syncStatus.syncError"
+  role="status"
+  [attr.aria-live]="syncStatus.syncInProgress ? 'polite' : 'off'"
+  [attr.aria-label]="getStatusMessage()">
+  
+  <div class="indicator-content">
+    <div class="status-info">
+      <ion-icon 
+        [name]="getStatusIcon()" 
+        [color]="getStatusColor()"
+        aria-hidden="true">
+      </ion-icon>
+      
+      <div class="status-text">
+        <span class="status-message">{{ getStatusMessage() }}</span>
+        
+        <span class="last-sync" *ngIf="syncStatus.lastSync && syncStatus.isOnline">
+          {{ i18nService.translate('offline.lastSync') }}: {{ formatLastSync() }}
+        </span>
+      </div>
+    </div>
+
+    <div class="status-actions">
+      <!-- Pending actions badge -->
+      <ion-badge 
+        *ngIf="syncStatus.pendingActions > 0" 
+        color="primary"
+        [attr.aria-label]="i18nService.translate('offline.pendingActions', { count: syncStatus.pendingActions.toString() })">
+        {{ syncStatus.pendingActions }}
+      </ion-badge>
+
+      <!-- Retry button for errors -->
+      <ion-button 
+        *ngIf="syncStatus.syncError && syncStatus.isOnline" 
+        fill="clear" 
+        size="small"
+        color="danger"
+        (click)="onRetrySync()"
+        [attr.aria-label]="i18nService.translate('offline.retrySync')">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+
+      <!-- Dismiss error button -->
+      <ion-button 
+        *ngIf="syncStatus.syncError" 
+        fill="clear" 
+        size="small"
+        color="medium"
+        (click)="onDismissError()"
+        [attr.aria-label]="i18nService.translate('common.dismiss')">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Progress bar for sync operations -->
+  <ion-progress-bar 
+    *ngIf="syncStatus.syncInProgress" 
+    type="indeterminate"
+    color="primary"
+    [attr.aria-label]="i18nService.translate('offline.syncProgress')">
+  </ion-progress-bar>
+</div>
+
+<!-- Screen reader only status updates -->
+<div class="sr-only" aria-live="polite" aria-atomic="true">
+  <span *ngIf="!syncStatus.isOnline">
+    {{ i18nService.translate('offline.screenReaderOffline') }}
+  </span>
+  <span *ngIf="syncStatus.syncInProgress">
+    {{ i18nService.translate('offline.screenReaderSyncing') }}
+  </span>
+  <span *ngIf="syncStatus.syncError">
+    {{ i18nService.translate('offline.screenReaderError') }}: {{ syncStatus.syncError }}
+  </span>
+</div>

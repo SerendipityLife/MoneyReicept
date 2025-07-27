@@ -1,0 +1,88 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>새 여행 계획 만들기</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="modal-container">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="calendar-outline"></ion-icon>
+          여행 정보 입력
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">여행 계획 이름 *</ion-label>
+          <ion-input 
+            [(ngModel)]="travelPlan.name" 
+            placeholder="예: 도쿄 여행 2025"
+            required>
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">여행 기간 선택 *</ion-label>
+          <div class="date-range-display">
+            <p *ngIf="travelPlan.startDate && travelPlan.endDate">
+              {{ travelPlan.startDate | date:'yyyy.MM.dd' }} ~ {{ travelPlan.endDate | date:'yyyy.MM.dd' }}
+              <span class="date-count" *ngIf="getDateRangeDays() > 0">
+                ({{ getDateRangeDays() }}일)
+              </span>
+            </p>
+            <p *ngIf="!travelPlan.startDate || !travelPlan.endDate" class="date-hint">
+              캘린더에서 여행 기간을 선택해주세요
+            </p>
+          </div>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">날짜 선택</ion-label>
+          <ion-datetime 
+            [(ngModel)]="selectedDate"
+            presentation="date"
+            [min]="minDate"
+            (ionChange)="onDateSelected($event)"
+            [highlightedDates]="highlightedDates">
+          </ion-datetime>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">예산 (선택사항)</ion-label>
+          <ion-input 
+            [(ngModel)]="travelPlan.budget" 
+            type="number"
+            placeholder="예산을 입력하세요">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">설명 (선택사항)</ion-label>
+          <ion-input 
+            [(ngModel)]="travelPlan.description" 
+            placeholder="여행에 대한 간단한 설명을 입력하세요">
+          </ion-input>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="button-container">
+      <ion-button 
+        expand="block" 
+        fill="solid" 
+        (click)="saveTravelPlan()"
+        [disabled]="isCreating">
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+        <span *ngIf="!isCreating">여행 계획 저장</span>
+        <span *ngIf="isCreating">저장 중...</span>
+      </ion-button>
+    </div>
+  </div>
+</ion-content> 

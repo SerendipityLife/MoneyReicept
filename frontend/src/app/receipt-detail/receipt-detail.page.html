@@ -1,0 +1,332 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>영수증 상세</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="presentActionSheet()" *ngIf="receipt && !isEditing">
+        <ion-icon name="ellipsis-vertical"></ion-icon>
+      </ion-button>
+      <ion-button (click)="saveChanges()" *ngIf="isEditing" color="primary">
+        <ion-icon name="checkmark"></ion-icon>
+      </ion-button>
+      <ion-button (click)="toggleEdit()" *ngIf="isEditing" fill="clear">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>영수증을 불러오는 중...</p>
+  </div>
+
+  <!-- Receipt Content -->
+  <div *ngIf="!isLoading && receipt" class="receipt-detail-container">
+    
+    <!-- Receipt Image -->
+    <ion-card class="receipt-image-card">
+      <ion-img [src]="receipt.imageUrl" alt="영수증 이미지"></ion-img>
+      <div class="image-overlay">
+        <ion-chip [color]="getStatusColor(receipt.processingStatus)">
+          <ion-label>{{ getStatusText(receipt.processingStatus) }}</ion-label>
+        </ion-chip>
+      </div>
+    </ion-card>
+
+    <!-- Store Information -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>매장 정보</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label>
+              <h3>매장명</h3>
+              <p *ngIf="!isEditing">{{ receipt.storeName || '알 수 없음' }}</p>
+              <ion-input 
+                *ngIf="isEditing" 
+                [(ngModel)]="editableReceipt.storeName" 
+                placeholder="매장명을 입력하세요">
+              </ion-input>
+            </ion-label>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label>
+              <h3>위치</h3>
+              <p *ngIf="!isEditing">{{ receipt.storeLocation || '알 수 없음' }}</p>
+              <ion-input 
+                *ngIf="isEditing" 
+                [(ngModel)]="editableReceipt.storeLocation" 
+                placeholder="매장 위치를 입력하세요">
+              </ion-input>
+            </ion-label>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label>
+              <h3>구매 일시</h3>
+              <p *ngIf="!isEditing">{{ receipt.purchaseDate | date:'yyyy년 MM월 dd일 HH:mm' }}</p>
+              <ion-datetime 
+                *ngIf="isEditing" 
+                [(ngModel)]="editableReceipt.purchaseDate" 
+                presentation="date-time">
+              </ion-datetime>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Amount Information -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>결제 정보</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <div class="amount-info">
+                <h4>일본 엔화</h4>
+                <p class="amount-jpy" *ngIf="!isEditing">
+                  ¥{{ receipt.totalAmountJpy | number:'1.0-0' }}
+                </p>
+                <ion-input 
+                  *ngIf="isEditing" 
+                  type="number" 
+                  [(ngModel)]="editableReceipt.totalAmountJpy" 
+                  placeholder="0">
+                </ion-input>
+              </div>
+            </ion-col>
+            <ion-col size="6">
+              <div class="amount-info">
+                <h4>한국 원화</h4>
+                <p class="amount-krw" *ngIf="!isEditing">
+                  {{ receipt.totalAmountKrw | currency:'KRW':'symbol':'1.0-0' }}
+                </p>
+                <ion-input 
+                  *ngIf="isEditing" 
+                  type="number" 
+                  [(ngModel)]="editableReceipt.totalAmountKrw" 
+                  placeholder="0">
+                </ion-input>
+              </div>
+            </ion-col>
+          </ion-row>
+          
+          <ion-row *ngIf="receipt.totalAmountJpy && receipt.totalAmountKrw">
+            <ion-col size="12">
+              <div class="exchange-rate-info">
+                <ion-note>
+                  환율: 1엔 = {{ (receipt.totalAmountKrw / receipt.totalAmountJpy) | number:'1.2-2' }}원
+                </ion-note>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Translation Controls -->
+    <ion-card *ngIf="receipt.items && receipt.items.length > 0">
+      <ion-card-header>
+        <ion-card-title>번역 설정</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <ion-item>
+                <ion-label>자동 번역</ion-label>
+                <ion-toggle 
+                  [(ngModel)]="translationSettings.autoTranslateEnabled"
+                  (ionChange)="toggleAutoTranslate()"
+                  slot="end">
+                </ion-toggle>
+              </ion-item>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button 
+                expand="block" 
+                fill="outline" 
+                (click)="translateAllItems()"
+                [disabled]="isTranslating">
+                <ion-icon name="language" slot="start"></ion-icon>
+                <span *ngIf="!isTranslating">전체 번역</span>
+                <span *ngIf="isTranslating">번역 중...</span>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="12">
+              <ion-button 
+                expand="block" 
+                fill="clear" 
+                size="small"
+                (click)="presentTranslationSettings()">
+                <ion-icon name="settings" slot="start"></ion-icon>
+                번역 설정
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Items List -->
+    <ion-card *ngIf="receipt.items && receipt.items.length > 0">
+      <ion-card-header>
+        <ion-card-title>
+          구매 상품 목록
+          <ion-badge color="primary">{{ receipt.items.length }}</ion-badge>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let item of receipt.items; let i = index">
+            <ion-label>
+              <div class="product-names">
+                <!-- Show translated name if available -->
+                <h3 *ngIf="hasTranslation(item.nameJp || item.name)" class="translated-name">
+                  {{ getTranslatedText(item.nameJp || item.name) }}
+                  <ion-chip color="success" size="small">
+                    <ion-icon name="language" size="small"></ion-icon>
+                  </ion-chip>
+                </h3>
+                
+                <!-- Show Korean name if available and no translation -->
+                <h3 *ngIf="!hasTranslation(item.nameJp || item.name) && item.nameKr" class="korean-name">
+                  {{ item.nameKr }}
+                </h3>
+                
+                <!-- Show original name if no Korean name and no translation -->
+                <h3 *ngIf="!hasTranslation(item.nameJp || item.name) && !item.nameKr" class="original-name">
+                  {{ item.name }}
+                </h3>
+                
+                <!-- Always show Japanese name as reference -->
+                <p *ngIf="item.nameJp" class="japanese-name">
+                  {{ item.nameJp }}
+                  <ion-button 
+                    fill="clear" 
+                    size="small" 
+                    (click)="translateSingleItem(item.nameJp)"
+                    *ngIf="!hasTranslation(item.nameJp)">
+                    <ion-icon name="language" size="small"></ion-icon>
+                  </ion-button>
+                </p>
+              </div>
+              
+              <p>수량: {{ item.quantity }}개</p>
+              <div class="item-prices">
+                <span class="price-jpy">¥{{ item.priceJpy | number:'1.0-0' }}</span>
+                <span class="price-separator">|</span>
+                <span class="price-krw">{{ item.priceKrw | currency:'KRW':'symbol':'1.0-0' }}</span>
+              </div>
+              <p *ngIf="item.productCode" class="product-code">상품코드: {{ item.productCode }}</p>
+            </ion-label>
+            
+            <!-- Translation actions -->
+            <div slot="end" class="translation-actions">
+              <ion-chip 
+                *ngIf="item.category" 
+                color="medium" 
+                size="small">
+                {{ item.category }}
+              </ion-chip>
+              
+              <!-- Translation quality feedback button -->
+              <ion-button 
+                fill="clear" 
+                size="small"
+                (click)="presentTranslationFeedback(item.nameJp || item.name)"
+                *ngIf="hasTranslation(item.nameJp || item.name)">
+                <ion-icon name="star-outline" size="small"></ion-icon>
+              </ion-button>
+              
+              <!-- Edit translation button -->
+              <ion-button 
+                fill="clear" 
+                size="small"
+                (click)="editTranslation(item.nameJp || item.name)"
+                *ngIf="hasTranslation(item.nameJp || item.name)">
+                <ion-icon name="create-outline" size="small"></ion-icon>
+              </ion-button>
+            </div>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Empty Items State -->
+    <ion-card *ngIf="!receipt.items || receipt.items.length === 0">
+      <ion-card-content>
+        <div class="empty-items-state">
+          <ion-icon name="receipt-outline" size="large"></ion-icon>
+          <h3>상품 정보 없음</h3>
+          <p>이 영수증에는 상품 정보가 없습니다.</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Processing Status Info -->
+    <ion-card *ngIf="receipt.processingStatus !== 'completed'">
+      <ion-card-header>
+        <ion-card-title>처리 상태</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="processing-status">
+          <ion-chip [color]="getStatusColor(receipt.processingStatus)">
+            <ion-icon 
+              name="time" 
+              *ngIf="receipt.processingStatus === 'pending'">
+            </ion-icon>
+            <ion-icon 
+              name="sync" 
+              *ngIf="receipt.processingStatus === 'processing'">
+            </ion-icon>
+            <ion-icon 
+              name="alert-circle" 
+              *ngIf="receipt.processingStatus === 'failed'">
+            </ion-icon>
+            <ion-label>{{ getStatusText(receipt.processingStatus) }}</ion-label>
+          </ion-chip>
+          
+          <p class="status-description">
+            <span *ngIf="receipt.processingStatus === 'pending'">
+              영수증이 처리 대기 중입니다. 잠시만 기다려주세요.
+            </span>
+            <span *ngIf="receipt.processingStatus === 'processing'">
+              영수증을 분석하고 있습니다. 곧 완료됩니다.
+            </span>
+            <span *ngIf="receipt.processingStatus === 'failed'">
+              영수증 처리에 실패했습니다. 수동으로 정보를 입력해주세요.
+            </span>
+          </p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && !receipt" class="error-state">
+    <ion-icon name="alert-circle-outline" size="large"></ion-icon>
+    <h2>영수증을 찾을 수 없습니다</h2>
+    <p>요청하신 영수증이 존재하지 않거나 삭제되었습니다.</p>
+    <ion-button (click)="goBack()" fill="outline">
+      목록으로 돌아가기
+    </ion-button>
+  </div>
+
+</ion-content>
